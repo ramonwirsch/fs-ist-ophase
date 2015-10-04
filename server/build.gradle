@@ -1,0 +1,39 @@
+plugins {
+    id 'org.akhikhl.gretty' version '1.2.4'
+}
+
+apply plugin: 'java'
+apply plugin: 'war'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+
+gretty {
+    contextPath ''
+}
+
+
+ext {
+    jerseyVersion = '2.22'
+    jacksonVersion = '2.5.4'
+}
+
+dependencies {
+// JAX-RS / REST / jersey
+    compile "org.glassfish.jersey.containers:jersey-container-servlet:$jerseyVersion"
+
+// Servlet
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+
+
+// Hibernate / DB / H2 / JPA
+    compile 'com.h2database:h2:1.4.187'
+
+    compile 'org.hibernate:hibernate-entitymanager:5.0.2.Final'
+    compile 'org.hibernate:hibernate-c3p0:5.0.2.Final'
+
+// Logging / SLF4J / Log4j
+    compile 'org.slf4j:slf4j-log4j12:1.7.12'
+
+}
