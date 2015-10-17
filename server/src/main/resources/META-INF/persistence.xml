@@ -6,7 +6,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:h2:data/server;mv_store=false" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:./data/server;FILE_LOCK=FS" />
             <property name="javax.persistence.jdbc.user" value="sa" />
             <property name="javax.persistence.jdbc.password" value="sa" />
 
@@ -19,6 +19,8 @@
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.show_sql" value="false" />
             <property name="hibernate.format_sql" value="true" />
+
+			<property name="jboss.as.jpa.providerModule" value="application" />
         </properties>
     </persistence-unit>
 </persistence>
