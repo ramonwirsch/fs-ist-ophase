@@ -16,13 +16,13 @@ import java.util.Set;
 @ApplicationPath("/")
 public class OphaseRestApplication extends Application {
 
-    @Override
-    public Set<Class<?>> getClasses() {
-        Set<Class<?>> classes = new HashSet<>();
-        classes.add(Server.class);
+	@Override
+	public Set<Class<?>> getClasses() {
+		Set<Class<?>> classes = new HashSet<>();
+		classes.add(Server.class);
 
-        return classes;
-    }
+		return classes;
+	}
 
 	@Override
 	public Set<Object> getSingletons() {
@@ -30,5 +30,6 @@ public class OphaseRestApplication extends Application {
 		singletons.add(new JacksonJsonProvider());
 		singletons.add(new JacksonSmileProvider());
 		singletons.add(new JacksonXMLProvider());
+		return singletons;
 	}
 }
