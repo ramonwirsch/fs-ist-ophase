@@ -1,5 +1,8 @@
 package de.fs_ist.ophase.rest;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jaxrs.smile.JacksonSmileProvider;
+import com.fasterxml.jackson.jaxrs.xml.JacksonXMLProvider;
 import de.fs_ist.ophase.rest.api.Server;
 
 import javax.ws.rs.ApplicationPath;
@@ -13,8 +16,6 @@ import java.util.Set;
 @ApplicationPath("/")
 public class OphaseRestApplication extends Application {
 
-    private static final Set<Class<?>> classes = new HashSet<>();
-
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
@@ -22,4 +23,12 @@ public class OphaseRestApplication extends Application {
 
         return classes;
     }
+
+	@Override
+	public Set<Object> getSingletons() {
+		Set<Object> singletons = new HashSet<>();
+		singletons.add(new JacksonJsonProvider());
+		singletons.add(new JacksonSmileProvider());
+		singletons.add(new JacksonXMLProvider());
+	}
 }

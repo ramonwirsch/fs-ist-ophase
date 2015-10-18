@@ -1,6 +1,4 @@
-plugins {
-    id 'org.akhikhl.gretty' version '1.2.4'
-}
+import java.text.SimpleDateFormat
 
 apply plugin: 'java'
 apply plugin: 'war'
@@ -9,14 +7,59 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
-gretty {
-    contextPath ''
+task buildInfo {
+	group "Build"
+	description "Add Build info (git infos) to META-INF"
+	ext.destinationDir = new File(file(sourceSets.main.output.resourcesDir), 'META-INF')
+	destinationDir.mkdirs()
+	ext.infoFile = new File(destinationDir, 'buildInfo.properties')
+
+	inputs.dir file('src')
+	//inputs.files sourceSets.main.allSource.files // collect all relevant src files that make up this app
+	inputs.dir file('../.git') // depend on .git as well, as it mirrors dirty state //Is it faster to collect the results of git-calls?
+	outputs.file infoFile
+
+	doLast {
+		def revision = 'git rev-parse --short HEAD'.execute().text.trim()
+
+		def branch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+
+		def output = 'git status --porcelain'.execute().text.trim()
+		def dirty = false
+
+		output.eachLine {
+			if (!it.startsWith("??"))
+				dirty = true;
+		}
+
+		if (dirty) {
+			revision = revision+ "-DEV"
+		}
+
+
+		def sdf = new SimpleDateFormat()
+		sdf.applyPattern("dd.MM.yyyy '-' HH\\:mm\\:ss z")
+		def time = sdf.format(new Date())
+
+		def content = "git.commit.branch="+ branch +"\ngit.commit.id.revision=" + revision + "\ngit.build.time=" + time + "\n"
+		infoFile.write(content)
+	}
 }
 
+task copyLicense(type: Copy) {
+	group "Build"
+	description "Add License Information to buildDir"
+	from '../COPYING'
+	into "$buildDir/resources/main/META-INF"
+}
+
+processResources {
+	it.dependsOn buildInfo, copyLicense
+}
 
 ext {
-    jerseyVersion = '2.22'
-    jacksonVersion = '2.5.4'
+    jerseyVersion = '2.22.1'
+    jacksonVersion = '2.6.3'
 }
 
 dependencies {
@@ -26,6 +69,15 @@ dependencies {
 // Servlet
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 
+//Jackson
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    compile "com.fasterxml.jackson.module:jackson-module-jaxb-annotations:$jacksonVersion"
+
+    // Jackson JAX-RS support
+	compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-smile-provider:$jacksonVersion"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-xml-provider:$jacksonVersion"
 
 // Hibernate / DB / H2 / JPA
     compile 'com.h2database:h2:1.3.176'
